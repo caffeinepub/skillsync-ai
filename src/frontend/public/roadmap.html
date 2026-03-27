@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync AI – Roadmap</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; background: #020818;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 2rem 1rem 4rem;
+    }
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(135deg, #020818, #0a0f2e, #0d1b4b, #0f0a2e, #020818);
+      background-size: 400% 400%; animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .particle { position: absolute; border-radius: 50%; opacity: 0; animation: floatParticle linear infinite; }
+    @keyframes floatParticle { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+    .container { position: relative; z-index: 10; max-width: 680px; margin: 0 auto; animation: fadeIn 0.8s ease forwards; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .logo { text-align:center; font-size:1.5rem; font-weight:900; margin-bottom:0.3rem;
+      background: linear-gradient(90deg, #00c8ff, #c084fc, #00ffe1); background-size: 200% auto;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      animation: shimmer 3s linear infinite; }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    .page-title {
+      text-align:center; font-size:clamp(1.4rem,4vw,2rem); font-weight:800;
+      color:#e0f0ff; text-shadow: 0 0 20px rgba(0,200,255,0.4); margin-bottom:0.3rem;
+    }
+    .role-badge {
+      display: block; width: fit-content; margin: 0 auto 2rem;
+      padding: 0.3rem 1.2rem;
+      background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.3);
+      border-radius: 50px; color: #00c8ff; font-size: 0.85rem;
+    }
+    .timeline { position: relative; padding-left: 2rem; }
+    .timeline::before {
+      content: ''; position: absolute; left: 0.6rem; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(180deg, #00c8ff, #7b2fff, #00ffe1);
+      border-radius: 99px;
+    }
+    .step {
+      position: relative;
+      background: rgba(10,15,46,0.88);
+      border: 1px solid rgba(0,200,255,0.15);
+      border-radius: 14px; padding: 1.2rem 1.4rem;
+      margin-bottom: 1.2rem;
+      backdrop-filter: blur(12px);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .step:hover { border-color: rgba(0,200,255,0.4); box-shadow: 0 0 24px rgba(0,200,255,0.12); }
+    .step-dot {
+      position: absolute; left: -2rem; top: 50%; transform: translateY(-50%);
+      width: 14px; height: 14px; border-radius: 50%;
+      background: radial-gradient(circle, #00ffe1, #00c8ff);
+      box-shadow: 0 0 12px #00c8ff, 0 0 24px rgba(0,200,255,0.4);
+      border: 2px solid #020818;
+    }
+    .step-num { font-size: 0.75rem; font-weight: 700; color: #00c8ff; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.3rem; }
+    .step-title { font-size: 1rem; font-weight: 700; color: #e0f0ff; margin-bottom: 0.3rem; }
+    .step-desc { font-size: 0.87rem; color: #7a9cc8; line-height: 1.6; }
+    .motivation {
+      margin: 2rem 0 1.5rem;
+      text-align: center;
+      padding: 1rem 1.5rem;
+      background: rgba(123,47,255,0.1);
+      border: 1px solid rgba(123,47,255,0.3);
+      border-radius: 12px;
+      color: #c084fc;
+      font-size: 1rem; font-style: italic;
+      text-shadow: 0 0 12px rgba(192,132,252,0.4);
+    }
+    .btn {
+      display: block; width: 100%;
+      padding: 1rem; font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+      color: #fff; background: linear-gradient(90deg, #0066cc, #7b2fff);
+      border: none; border-radius: 10px; cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(0,200,255,0.35);
+      transition: all 0.3s;
+    }
+    .btn:hover { box-shadow: 0 0 40px rgba(0,200,255,0.6), 0 0 60px rgba(123,47,255,0.4); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="container">
+    <div class="logo">⚡ SkillSync AI</div>
+    <div class="page-title">Mastery Roadmap Guide</div>
+    <div class="role-badge" id="roleBadge"></div>
+    <div class="timeline" id="timeline"></div>
+    <div class="motivation">"Consistency beats talent. Keep building."</div>
+    <button class="btn" onclick="goHome()">🏠 Go To Main Page</button>
+  </div>
+  <script>
+    const container = document.getElementById('particles');
+    const colors = ['#00c8ff','#7b2fff','#00ffe1','#4f8bff','#c084fc'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div'); p.className = 'particle';
+      const size = Math.random()*4+1;
+      p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[i%colors.length]};box-shadow:0 0 ${size*3}px ${colors[i%colors.length]};animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*8}s;`;
+      container.appendChild(p);
+    }
+
+    const role = localStorage.getItem('ss_role') || 'Software Engineer';
+    document.getElementById('roleBadge').textContent = '🎯 ' + role;
+
+    const roadmaps = {
+      'Python Developer':          [['Learn Python Basics','Variables, loops, functions, and data types'],['Master OOP','Classes, inheritance, encapsulation, polymorphism'],['File Handling & Modules','Read/write files, use standard library modules'],['Work with Libraries','Pandas, NumPy, Requests, and BeautifulSoup'],['Learn a Framework','Django or Flask for backend development'],['Databases','SQL and SQLAlchemy ORM'],['Build Projects','Portfolio apps to showcase your Python skills'],['Deployment','Deploy apps to Heroku, AWS, or Railway']],
+      'Java Developer':            [['Core Java','Syntax, OOP, exception handling'],['Data Structures','Arrays, lists, maps, stacks, queues'],['Spring Boot','REST APIs, MVC, dependency injection'],['JDBC & Databases','Connect to SQL databases'],['Testing','JUnit and Mockito for unit tests'],['Build Tools','Maven and Gradle'],['Microservices','Spring Cloud basics'],['Deploy','Docker and cloud deployment']],
+      'Full Stack Developer':      [['HTML & CSS Fundamentals','Semantic HTML, Flexbox, Grid, responsive design'],['JavaScript Essentials','ES6+, DOM, async/await, fetch API'],['Frontend Framework','React or Vue.js'],['Backend Basics','Node.js + Express or Python + Django'],['Databases','SQL (PostgreSQL) and NoSQL (MongoDB)'],['REST APIs','Design and consume RESTful endpoints'],['Version Control','Git & GitHub workflows'],['Deployment','Docker, Vercel, Heroku, or AWS']],
+      'Data Analyst':              [['Excel & Spreadsheets','Pivot tables, VLOOKUP, formulas'],['SQL Fundamentals','SELECT, JOIN, GROUP BY, subqueries'],['Python for Data','Pandas, NumPy, data cleaning'],['Data Visualization','Matplotlib, Seaborn, Tableau, or Power BI'],['Statistics Basics','Mean, median, std dev, hypothesis testing'],['Business Understanding','KPI analysis and storytelling with data'],['Dashboards','Build interactive reports'],['Portfolio Projects','End-to-end analysis case studies']],
+      'AI Engineer':               [['Python & Math','Linear algebra, calculus, statistics'],['Machine Learning','Scikit-learn, supervised/unsupervised learning'],['Deep Learning','Neural networks, CNNs, RNNs with PyTorch/TF'],['MLOps','Model tracking with MLflow, deployment pipelines'],['NLP Basics','Text processing, transformers, BERT'],['Cloud ML','AWS SageMaker or Google Vertex AI'],['Build AI Projects','End-to-end ML apps'],['Research Papers','Read and implement SOTA models']],
+      'Cloud Engineer':            [['Networking Basics','TCP/IP, DNS, HTTP, firewalls'],['Linux & Bash','Command line, scripting, permissions'],['Choose a Cloud','AWS, GCP, or Azure fundamentals'],['IaC','Terraform and CloudFormation'],['Containers','Docker and Kubernetes'],['CI/CD Pipelines','GitHub Actions, Jenkins'],['Security','IAM, encryption, compliance'],['Certifications','AWS Solutions Architect or GCP Professional']],
+      'Cybersecurity Analyst':     [['Networking Fundamentals','OSI model, TCP/IP, protocols'],['Linux & Windows Admin','Command line and system administration'],['Security Concepts','CIA triad, threat modeling, risk assessment'],['Penetration Testing','Kali Linux, Metasploit, OWASP'],['SIEM Tools','Splunk, ELK Stack for log analysis'],['Cryptography','Encryption, hashing, PKI'],['Compliance','GDPR, HIPAA, SOC 2 basics'],['Certifications','CompTIA Security+ or CEH']],
+      'DevOps Engineer':           [['Linux & Bash Scripting','System admin and automation scripts'],['Version Control','Advanced Git workflows'],['CI/CD','Jenkins, GitHub Actions, GitLab CI'],['Docker','Containerization concepts and Dockerfiles'],['Kubernetes','Orchestration, pods, deployments, services'],['Infrastructure as Code','Terraform, Ansible'],['Monitoring','Prometheus, Grafana, ELK Stack'],['Cloud Platforms','AWS/GCP/Azure DevOps services']],
+      'Web Developer':             [['HTML5 & CSS3','Semantic markup, animations, grid/flex'],['JavaScript','DOM, events, ES6+, async programming'],['Responsive Design','Mobile-first, media queries, breakpoints'],['JavaScript Frameworks','React, Vue, or Angular'],['Backend Basics','Node.js or PHP/Python'],['Databases','MySQL or PostgreSQL'],['SEO & Accessibility','Best practices and WCAG standards'],['Deploy & Host','Netlify, Vercel, or AWS S3']],
+      'Software Engineer':         [['CS Fundamentals','Data structures and algorithms'],['OOP & Design Patterns','SOLID principles, common patterns'],['Version Control','Git branching and workflows'],['System Design','Scalability, databases, caching, queues'],['Testing','Unit, integration, and E2E testing'],['APIs','REST and GraphQL'],['CI/CD & DevOps','Automated pipelines and deployment'],['Open Source Contribution','Build a portfolio and collaborate']],
+      'Mobile App Developer':      [['Choose Platform','Android (Kotlin) or iOS (Swift) or Cross-platform (Flutter)'],['UI/UX for Mobile','Material Design / Human Interface Guidelines'],['State Management','Provider, Redux, or BLoC'],['APIs & Networking','Fetch and parse REST APIs'],['Local Storage','SQLite, SharedPreferences, or CoreData'],['Push Notifications','FCM or APNs integration'],['App Store Guidelines','Publishing on Google Play and App Store'],['Build Projects','Portfolio of real-world apps']],
+      'Frontend Developer':        [['HTML & CSS Mastery','Semantics, animations, layout'],['JavaScript Deep Dive','Closures, prototypes, async patterns'],['React or Vue','Component patterns, hooks, routing'],['State Management','Redux, Zustand, Pinia'],['Testing','Jest, React Testing Library'],['Performance','Lazy loading, code splitting, Core Web Vitals'],['Accessibility','ARIA, keyboard navigation, WCAG'],['Build Tools','Webpack, Vite, module bundling']],
+      'Backend Developer':         [['Choose a Language','Node.js, Python, Java, or Go'],['Web Frameworks','Express, Django, Spring Boot, or Gin'],['Databases','SQL & NoSQL design, indexing'],['REST & GraphQL APIs','Design, auth, versioning'],['Authentication','JWT, OAuth2, sessions'],['Caching','Redis and CDN strategies'],['Security','OWASP Top 10, input validation'],['Deployment','Docker, cloud services, load balancing']],
+      'Data Scientist':            [['Mathematics','Linear algebra, calculus, probability'],['Python','Pandas, NumPy, Matplotlib'],['Statistics','Hypothesis testing, distributions, Bayesian'],['Machine Learning','Scikit-learn algorithms and model evaluation'],['Deep Learning','TensorFlow or PyTorch'],['Feature Engineering','Selection, extraction, transformation'],['Model Deployment','Flask/FastAPI + cloud'],['Research & Communication','Notebooks, reports, storytelling']],
+      'React Developer':           [['JavaScript ES6+','Arrow functions, destructuring, promises'],['React Basics','JSX, components, props, state'],['React Hooks','useState, useEffect, useContext, custom hooks'],['React Router','Navigation and dynamic routes'],['State Management','Redux Toolkit or Zustand'],['API Integration','Fetch, Axios, React Query'],['Testing','React Testing Library and Jest'],['Performance','Memoization, lazy loading, code splitting']],
+    };
+
+    // Default generic roadmap
+    const defaultRoadmap = [
+      ['Set Your Goal','Choose your target role and understand requirements'],
+      ['Learn Fundamentals','Programming basics, data structures, algorithms'],
+      ['Pick a Tech Stack','Choose languages and frameworks relevant to your role'],
+      ['Build Projects','Apply knowledge with real-world portfolio projects'],
+      ['Version Control','Learn Git and contribute to open source'],
+      ['System Design','Understand scalable architecture patterns'],
+      ['Testing & Quality','Write tests and follow best practices'],
+      ['Deploy & Ship','Host your projects and prepare for interviews'],
+    ];
+
+    const steps = roadmaps[role] || defaultRoadmap;
+    const timeline = document.getElementById('timeline');
+    steps.forEach(([title, desc], i) => {
+      const div = document.createElement('div');
+      div.className = 'step';
+      div.innerHTML = `
+        <div class="step-dot"></div>
+        <div class="step-num">Step ${i+1}</div>
+        <div class="step-title">${title}</div>
+        <div class="step-desc">${desc}</div>
+      `;
+      timeline.appendChild(div);
+    });
+
+    function goHome() {
+      localStorage.removeItem('ss_skills');
+      localStorage.removeItem('ss_role');
+      localStorage.removeItem('ss_missing');
+      window.location.href = 'main.html';
+    }
+  </script>
+</body>
+</html>

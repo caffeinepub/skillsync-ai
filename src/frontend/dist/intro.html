@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync AI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #020818;
+      overflow: hidden;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* Animated gradient background */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(135deg, #020818 0%, #0a0f2e 25%, #0d1b4b 50%, #0f0a2e 75%, #020818 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Particles */
+    .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: floatParticle linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatParticle {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+
+    /* Content */
+    .center {
+      position: relative; z-index: 10;
+      text-align: center;
+      animation: fadeIn 1.2s ease forwards;
+      opacity: 0;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-icon { font-size: 4rem; display: block; margin-bottom: 0.5rem; }
+
+    .logo-text {
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      font-weight: 900;
+      letter-spacing: 0.05em;
+      background: linear-gradient(90deg, #00c8ff, #7b2fff, #00ffe1, #00c8ff);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 3s linear infinite;
+      filter: drop-shadow(0 0 20px rgba(0,200,255,0.6));
+    }
+    @keyframes shimmer {
+      to { background-position: 200% center; }
+    }
+
+    .tagline {
+      margin-top: 1.2rem;
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      color: #a0c4ff;
+      text-shadow: 0 0 16px #00c8ffaa;
+      letter-spacing: 0.08em;
+    }
+
+    .loading-bar {
+      margin: 2rem auto 0;
+      width: 200px; height: 3px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .loading-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00c8ff, #7b2fff);
+      border-radius: 99px;
+      animation: loadFill 0.8s linear forwards;
+      box-shadow: 0 0 10px #00c8ff;
+    }
+    @keyframes loadFill {
+      from { width: 0%; }
+      to   { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="particles" id="particles"></div>
+
+  <div class="center">
+    <span class="logo-icon">⚡</span>
+    <div class="logo-text">SkillSync AI</div>
+    <div class="tagline">Your AI-Powered Career Navigator</div>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+  </div>
+
+  <script>
+    // Generate particles
+    const container = document.getElementById('particles');
+    const colors = ['#00c8ff','#7b2fff','#00ffe1','#4f8bff','#c084fc'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = Math.random() * 4 + 1;
+      p.style.cssText = `
+        left: ${Math.random()*100}%;
+        width: ${size}px; height: ${size}px;
+        background: ${colors[Math.floor(Math.random()*colors.length)]};
+        box-shadow: 0 0 ${size*3}px ${colors[Math.floor(Math.random()*colors.length)]};
+        animation-duration: ${Math.random()*8+6}s;
+        animation-delay: ${Math.random()*8}s;
+      `;
+      container.appendChild(p);
+    }
+
+    // Redirect after 2s
+    setTimeout(() => { window.location.href = 'welcome.html'; }, 800);
+  </script>
+</body>
+</html>

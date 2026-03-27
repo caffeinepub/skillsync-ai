@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync AI – Skill Path</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh; background: #020818;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 2rem 1rem 4rem;
+    }
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(135deg, #020818, #0a0f2e, #0d1b4b, #0f0a2e, #020818);
+      background-size: 400% 400%; animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .particle { position: absolute; border-radius: 50%; opacity: 0; animation: floatParticle linear infinite; }
+    @keyframes floatParticle { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+    .container { position: relative; z-index: 10; max-width: 760px; margin: 0 auto; animation: fadeIn 0.8s ease forwards; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .logo { text-align:center; font-size:1.5rem; font-weight:900; margin-bottom:0.3rem;
+      background: linear-gradient(90deg, #00c8ff, #c084fc, #00ffe1); background-size: 200% auto;
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+      animation: shimmer 3s linear infinite; }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    .page-title {
+      text-align:center; font-size:clamp(1.4rem,4vw,2rem); font-weight:800;
+      color:#e0f0ff; text-shadow: 0 0 20px rgba(0,200,255,0.4); margin-bottom:0.3rem;
+    }
+    .subtitle { text-align:center; color:#7a9cc8; font-size:0.9rem; margin-bottom:2rem; }
+    .skill-card {
+      background: rgba(10,15,46,0.88);
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 16px; padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 30px rgba(0,200,255,0.05);
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .skill-card:hover { border-color: rgba(0,200,255,0.5); box-shadow: 0 0 30px rgba(0,200,255,0.15); }
+    .skill-name {
+      font-size: 1.1rem; font-weight: 700;
+      color: #00ffe1; text-shadow: 0 0 12px rgba(0,255,225,0.4);
+      margin-bottom: 1rem;
+    }
+    .link-section { margin-bottom: 0.8rem; }
+    .link-section-title { color: #a0c4ff; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .link-row { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .link-chip {
+      padding: 0.3rem 0.8rem;
+      border-radius: 50px; font-size: 0.8rem; font-weight: 600;
+      text-decoration: none; transition: all 0.25s;
+      display: inline-block;
+    }
+    .learn-chip {
+      background: rgba(0,200,255,0.08);
+      border: 1px solid rgba(0,200,255,0.3);
+      color: #00c8ff;
+    }
+    .learn-chip:hover { background: rgba(0,200,255,0.2); box-shadow: 0 0 12px rgba(0,200,255,0.3); }
+    .practice-chip {
+      background: rgba(123,47,255,0.08);
+      border: 1px solid rgba(123,47,255,0.35);
+      color: #c084fc;
+    }
+    .practice-chip:hover { background: rgba(123,47,255,0.2); box-shadow: 0 0 12px rgba(123,47,255,0.3); }
+    .btn {
+      display: block; width: 100%; margin-top: 2rem;
+      padding: 1rem; font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+      color: #fff; background: linear-gradient(90deg, #0066cc, #7b2fff);
+      border: none; border-radius: 10px; cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(0,200,255,0.35);
+      transition: all 0.3s;
+    }
+    .btn:hover { box-shadow: 0 0 40px rgba(0,200,255,0.6), 0 0 60px rgba(123,47,255,0.4); transform: translateY(-2px); }
+    .empty { text-align:center; color:#7a9cc8; padding: 2rem; }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="container">
+    <div class="logo">⚡ SkillSync AI</div>
+    <div class="page-title">Your Skill Path</div>
+    <div class="subtitle">Master these skills to land your dream role</div>
+    <div id="skillCards"></div>
+    <button class="btn" onclick="window.location.href='roadmap.html'">🗺️ View Roadmap</button>
+  </div>
+  <script>
+    const container = document.getElementById('particles');
+    const colors = ['#00c8ff','#7b2fff','#00ffe1','#4f8bff','#c084fc'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div'); p.className = 'particle';
+      const size = Math.random()*4+1;
+      p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[i%colors.length]};box-shadow:0 0 ${size*3}px ${colors[i%colors.length]};animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*8}s;`;
+      container.appendChild(p);
+    }
+
+    const learnLinks = [
+      { name: 'W3Schools',      url: 'https://www.w3schools.com' },
+      { name: 'GeeksforGeeks',  url: 'https://www.geeksforgeeks.org' },
+      { name: 'Programiz',      url: 'https://www.programiz.com' },
+      { name: 'MDN',            url: 'https://developer.mozilla.org' },
+      { name: 'TutorialsPoint', url: 'https://www.tutorialspoint.com' },
+    ];
+    const practiceLinks = [
+      { name: 'HackerRank', url: 'https://www.hackerrank.com' },
+      { name: 'LeetCode',   url: 'https://leetcode.com' },
+      { name: 'CodeChef',   url: 'https://www.codechef.com' },
+    ];
+
+    const missing = JSON.parse(localStorage.getItem('ss_missing') || '[]');
+    const cardsEl = document.getElementById('skillCards');
+
+    if (!missing.length) {
+      cardsEl.innerHTML = '<div class="empty">No skills data found. Please go back to the main page and analyze again.</div>';
+    } else {
+      missing.forEach(skill => {
+        const card = document.createElement('div');
+        card.className = 'skill-card';
+        card.innerHTML = `
+          <div class="skill-name">📌 ${skill}</div>
+          <div class="link-section">
+            <div class="link-section-title">📚 Learn Here</div>
+            <div class="link-row">
+              ${learnLinks.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="link-chip learn-chip">${l.name}</a>`).join('')}
+            </div>
+          </div>
+          <div class="link-section">
+            <div class="link-section-title">💻 Practice Here</div>
+            <div class="link-row">
+              ${practiceLinks.map(l => `<a href="${l.url}" target="_blank" rel="noopener" class="link-chip practice-chip">${l.name}</a>`).join('')}
+            </div>
+          </div>
+        `;
+        cardsEl.appendChild(card);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SkillSync AI – Results</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #020818; font-family: 'Segoe UI', system-ui, sans-serif;
+      padding: 2rem 1rem 4rem;
+    }
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      background: linear-gradient(135deg, #020818, #0a0f2e, #0d1b4b, #0f0a2e, #020818);
+      background-size: 400% 400%; animation: gradientShift 8s ease infinite;
+    }
+    @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    .particles { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+    .particle { position: absolute; border-radius: 50%; opacity: 0; animation: floatParticle linear infinite; }
+    @keyframes floatParticle { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+    .container {
+      position: relative; z-index: 10;
+      max-width: 640px; margin: 0 auto;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+    .logo {
+      text-align: center; font-size: 1.5rem; font-weight: 900; margin-bottom: 0.3rem;
+      background: linear-gradient(90deg, #00c8ff, #c084fc, #00ffe1);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: shimmer 3s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    .page-title {
+      text-align: center; font-size: clamp(1.4rem, 4vw, 2rem);
+      font-weight: 800; color: #e0f0ff;
+      text-shadow: 0 0 20px rgba(0,200,255,0.4);
+      margin-bottom: 0.5rem;
+    }
+    .role-badge {
+      display: inline-block; margin: 0 auto 1.5rem;
+      padding: 0.3rem 1.2rem;
+      background: rgba(0,200,255,0.1); border: 1px solid rgba(0,200,255,0.3);
+      border-radius: 50px; color: #00c8ff; font-size: 0.85rem;
+      text-align: center; display: block; width: fit-content; margin: 0 auto 2rem;
+    }
+    .card {
+      background: rgba(10,15,46,0.85);
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 16px; padding: 1.5rem;
+      margin-bottom: 1.2rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 30px rgba(0,200,255,0.06);
+    }
+    .card-title { color: #a0c4ff; font-size: 0.8rem; font-weight: 700; letter-spacing: 0.1em; margin-bottom: 1.2rem; text-transform: uppercase; }
+    .bar-label { display: flex; justify-content: space-between; color: #94b8e8; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .bar-wrap {
+      height: 12px; background: rgba(255,255,255,0.06);
+      border-radius: 99px; overflow: hidden; margin-bottom: 1.1rem;
+    }
+    .bar-fill {
+      height: 100%; border-radius: 99px;
+      width: 0%;
+      transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .bar-fill.match   { background: linear-gradient(90deg, #0066cc, #00c8ff); box-shadow: 0 0 10px #00c8ff66; }
+    .bar-fill.conf    { background: linear-gradient(90deg, #7b2fff, #c084fc); box-shadow: 0 0 10px #7b2fff66; }
+    .bar-fill.ready   { background: linear-gradient(90deg, #00998a, #00ffe1); box-shadow: 0 0 10px #00ffe166; }
+    .missing-list { list-style: none; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .missing-list li {
+      padding: 0.35rem 0.9rem;
+      background: rgba(123,47,255,0.12);
+      border: 1px solid rgba(123,47,255,0.35);
+      border-radius: 50px; color: #c084fc; font-size: 0.85rem;
+    }
+    .btn {
+      display: block; width: 100%; margin-top: 1.5rem;
+      padding: 1rem;
+      font-size: 1rem; font-weight: 700; letter-spacing: 0.1em;
+      color: #fff;
+      background: linear-gradient(90deg, #0066cc, #7b2fff);
+      border: none; border-radius: 10px; cursor: pointer;
+      text-transform: uppercase;
+      box-shadow: 0 0 24px rgba(0,200,255,0.35);
+      transition: all 0.3s;
+    }
+    .btn:hover { box-shadow: 0 0 40px rgba(0,200,255,0.6), 0 0 60px rgba(123,47,255,0.4); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="particles" id="particles"></div>
+  <div class="container">
+    <div class="logo">⚡ SkillSync AI</div>
+    <div class="page-title">Your Analysis Results</div>
+    <div class="role-badge" id="roleBadge"></div>
+
+    <div class="card">
+      <div class="card-title">📊 Skill Assessment</div>
+      <div class="bar-label"><span>Skill Match</span><span id="matchVal">0%</span></div>
+      <div class="bar-wrap"><div class="bar-fill match" id="matchBar"></div></div>
+      <div class="bar-label"><span>Confidence Score</span><span id="confVal">0%</span></div>
+      <div class="bar-wrap"><div class="bar-fill conf" id="confBar"></div></div>
+      <div class="bar-label"><span>Job Readiness</span><span id="readyVal">0%</span></div>
+      <div class="bar-wrap"><div class="bar-fill ready" id="readyBar"></div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 Missing Skills to Master</div>
+      <ul class="missing-list" id="missingList"></ul>
+    </div>
+
+    <button class="btn" onclick="unlock()">🔓 Unlock Your Skill Path</button>
+  </div>
+
+  <script>
+    const container = document.getElementById('particles');
+    const colors = ['#00c8ff','#7b2fff','#00ffe1','#4f8bff','#c084fc'];
+    for (let i = 0; i < 30; i++) {
+      const p = document.createElement('div'); p.className = 'particle';
+      const size = Math.random()*4+1;
+      p.style.cssText = `left:${Math.random()*100}%;width:${size}px;height:${size}px;background:${colors[i%colors.length]};box-shadow:0 0 ${size*3}px ${colors[i%colors.length]};animation-duration:${Math.random()*8+6}s;animation-delay:${Math.random()*8}s;`;
+      container.appendChild(p);
+    }
+
+    const skills = localStorage.getItem('ss_skills') || '';
+    const role = localStorage.getItem('ss_role') || 'Software Engineer';
+    document.getElementById('roleBadge').textContent = '🎯 ' + role;
+
+    // Compute scores based on skill input length
+    const base = Math.min(skills.split(',').length * 12 + skills.length * 0.5, 85);
+    const match = Math.floor(base + Math.random()*10 + 40); // 40–95
+    const conf  = Math.floor(base * 0.9 + Math.random()*8 + 35);
+    const ready = Math.floor(base * 0.8 + Math.random()*8 + 30);
+    const clamp = v => Math.min(Math.max(v, 20), 95);
+
+    const missingSkillsDB = {
+      'Python Developer':          ['OOP Concepts','File Handling','SQL Basics','Pandas','NumPy','Django/Flask'],
+      'Java Developer':            ['OOP','JVM Internals','Spring Boot','JDBC','Maven','JUnit'],
+      'Full Stack Developer':      ['React','Node.js','REST APIs','SQL','Docker','Git'],
+      'Data Analyst':              ['SQL','Excel','Pandas','Data Visualization','Statistics','Tableau'],
+      'AI Engineer':               ['Deep Learning','PyTorch','MLOps','NLP','Cloud ML','Math for ML'],
+      'Cloud Engineer':            ['AWS/GCP/Azure','Terraform','Docker','Kubernetes','Networking','IAM'],
+      'Cybersecurity Analyst':     ['Network Security','Penetration Testing','SIEM','Firewalls','Cryptography','Compliance'],
+      'DevOps Engineer':           ['CI/CD','Docker','Kubernetes','Bash Scripting','Monitoring','Terraform'],
+      'Web Developer':             ['HTML/CSS','JavaScript','Responsive Design','REST APIs','Git','Performance Optimization'],
+      'Software Engineer':         ['Data Structures','Algorithms','System Design','OOP','Testing','Git'],
+      'Mobile App Developer':      ['Flutter/React Native','State Management','APIs','Push Notifications','App Store Deployment','SQLite'],
+      'Database Administrator':    ['SQL Tuning','Backup & Recovery','Replication','NoSQL','Database Security','Stored Procedures'],
+      'Network Engineer':          ['TCP/IP','Routing & Switching','Firewalls','VPN','Network Monitoring','Cisco IOS'],
+      'Machine Learning Engineer': ['Scikit-learn','Feature Engineering','Model Deployment','MLflow','Statistics','Python'],
+      'Data Scientist':            ['Statistics','Python','R','Machine Learning','Data Wrangling','Visualization'],
+      'Blockchain Developer':      ['Solidity','Smart Contracts','Web3.js','Ethereum','Cryptography','DeFi'],
+      'Game Developer':            ['Unity/Unreal','C#/C++','Physics Engine','3D Math','Game Loop','AI in Games'],
+      'UI/UX Designer':            ['Figma','Prototyping','User Research','Wireframing','Accessibility','Design Systems'],
+      'Systems Analyst':           ['Requirements Gathering','UML','Business Process','SQL','Stakeholder Management','Documentation'],
+      'IT Support Specialist':     ['Troubleshooting','Active Directory','Networking','Help Desk Tools','OS Administration','Security Basics'],
+      'QA Engineer':               ['Test Plans','Selenium','API Testing','Bug Tracking','Agile Testing','Performance Testing'],
+      'Embedded Systems Engineer': ['C/C++','Microcontrollers','RTOS','Hardware Protocols','Debugging Tools','Assembly'],
+      'AR/VR Developer':           ['Unity','C#','3D Modeling','Spatial Computing','OpenXR','Performance Optimization'],
+      'NLP Engineer':              ['Text Processing','Transformers','BERT/GPT','spaCy','Sequence Modeling','Python'],
+      'Computer Vision Engineer':  ['OpenCV','CNNs','Image Segmentation','PyTorch','Data Augmentation','Object Detection'],
+      'Site Reliability Engineer': ['Monitoring','Incident Response','Linux','Kubernetes','SLI/SLO/SLA','Automation'],
+      'Scrum Master':              ['Agile Ceremonies','Kanban','Conflict Resolution','Jira','Coaching','Metrics'],
+      'Product Manager':           ['Product Roadmap','User Stories','A/B Testing','Analytics','Stakeholder Management','Prioritization'],
+      'IT Project Manager':        ['PMP Concepts','Risk Management','Budgeting','MS Project','Agile','Resource Planning'],
+      'Business Intelligence Analyst': ['Power BI','SQL','DAX','ETL','Data Modeling','Excel'],
+      'Data Engineer':             ['Apache Spark','Airflow','SQL','ETL Pipelines','Cloud Storage','Kafka'],
+      'Robotics Engineer':         ['ROS','C++','Kinematics','Sensors','Control Systems','Python'],
+      'API Developer':             ['REST','GraphQL','Authentication','Rate Limiting','Documentation','Testing'],
+      'Backend Developer':         ['Node.js/Django','Databases','REST APIs','Authentication','Caching','Security'],
+      'Frontend Developer':        ['HTML/CSS','JavaScript','React/Vue','Accessibility','Performance','Testing'],
+      'React Developer':           ['Hooks','State Management','React Router','Testing Library','Redux','Performance'],
+      'Node.js Developer':         ['Express.js','Async/Await','MongoDB','REST APIs','Authentication','Deployment'],
+      'Angular Developer':         ['TypeScript','RxJS','NgRx','Angular CLI','Testing','Routing'],
+      'Vue.js Developer':          ['Vuex','Vue Router','Composition API','Testing','SSR','Performance'],
+      'Django Developer':          ['Django ORM','DRF','Celery','PostgreSQL','Authentication','Deployment'],
+      'Flask Developer':           ['Flask Blueprints','SQLAlchemy','REST APIs','Authentication','Testing','Docker'],
+      'PHP Developer':             ['Laravel','MySQL','Composer','REST APIs','Security','Testing'],
+      'Ruby on Rails Developer':   ['ActiveRecord','MVC Pattern','REST','RSpec','Gems','Deployment'],
+      '.NET Developer':            ['C#','ASP.NET Core','Entity Framework','SQL Server','Dependency Injection','Testing'],
+      'Kotlin Developer':          ['Coroutines','Android SDK','Jetpack','MVVM','Room Database','Testing'],
+      'Swift Developer':           ['SwiftUI','Combine','Core Data','Networking','Testing','App Architecture'],
+      'Go Developer':              ['Goroutines','Channels','REST APIs','Microservices','Docker','Testing'],
+      'Rust Developer':            ['Ownership Model','Async Rust','Error Handling','Cargo','WebAssembly','Systems Programming'],
+      'Scala Developer':           ['Functional Programming','Akka','Spark','SBT','Play Framework','Testing'],
+      'R Developer':               ['ggplot2','dplyr','R Markdown','Statistical Modeling','Shiny','tidyverse'],
+    };
+
+    const missing = missingSkillsDB[role] || ['Data Structures','Algorithms','OOP','Databases','APIs','Testing'];
+
+    setTimeout(() => {
+      const mv = clamp(match); const cv = clamp(conf); const rv = clamp(ready);
+      document.getElementById('matchBar').style.width = mv + '%';
+      document.getElementById('confBar').style.width  = cv + '%';
+      document.getElementById('readyBar').style.width = rv + '%';
+      document.getElementById('matchVal').textContent  = mv + '%';
+      document.getElementById('confVal').textContent   = cv + '%';
+      document.getElementById('readyVal').textContent  = rv + '%';
+    }, 200);
+
+    const ul = document.getElementById('missingList');
+    missing.forEach(s => { const li = document.createElement('li'); li.textContent = s; ul.appendChild(li); });
+
+    function unlock() {
+      localStorage.setItem('ss_missing', JSON.stringify(missing));
+      window.location.href = 'skills.html';
+    }
+  </script>
+</body>
+</html>
